@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/bootstrap.php" colors="true"
+  convertErrorsToExceptions="true" convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true" processIsolation="false"
+  stopOnFailure="false">
+  <php>
+    <const name="PHPUNIT_DEBUG" value="false" />
+    <ini name="display_errors" value="On" />
+    <ini name="error_reporting" value="32767" />
+  </php>
+  <testsuites>
+    <testsuite name="All">
+      <directory suffix="Test.php">./tests/unit</directory>
+    </testsuite>
+  </testsuites>
+  <logging>
+    <log type="coverage-html" target="./tests/output/Coverage/"
+      charset="UTF-8" yui="true" highlight="true" />
+    <log type="junit" target="./tests/output/Results/Results.xml"
+      logIncompleteSkipped="true" />
+  </logging>
+  <filter>
+    <whitelist addUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">src/</directory>
+    </whitelist>
+  </filter>
+</phpunit>
