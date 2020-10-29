@@ -100,6 +100,7 @@ class MySm2 {
         }
         $adapter = $this->adapter;
         $generator = $this->generator;
+        //这个sha256 只是生成随机数时用到，和主体算法无关
         $algorithm = 'sha256';
 
         $pemSerializer = new PemPrivateKeySerializer( new DerPrivateKeySerializer( $adapter ) );
