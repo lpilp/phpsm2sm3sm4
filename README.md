@@ -1,7 +1,7 @@
 # php sm2 sm3 sm4 国密算法整理
-php版本的国密sm2的签名算法，sm3的hash,  sm4的ecb加解密
+php版本的国密sm2的签名算法，sm3的hash,  sm4的ecb加解密，要求PHP７，打开gmp支持
 ### SM2
-* 该算法主体基于PHPECC算法架构，添加了sm2的椭圆参数算法
+* 该算法主体基于PHPECC算法架构，添加了sm2的椭圆参数算法， 
 * 参考了 https://github.com/ToAnyWhere/phpsm2 童鞋的sm2验签算法，密钥生成算法
 * 添加了签名算法， 支持sm2的16进制，base64公私钥的签名，验签算法
 * 支持从文件中读取pem文件的签名，验签算法
