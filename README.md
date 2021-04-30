@@ -23,4 +23,4 @@
 * js: https://github.com/JuneAndGreen/sm-crypto
 * python: https://github.com/duanhongyi/gmssl
 * java: https://github.com/ZZMarquis/gmhelper
-* openssl: 升到1.1.1以后，支持sm2,sm3,sm4的加解密，目前还不支持sm2的签名，得使用原生代码实现
+* openssl: 升到1.1.1以后，支持sm3,sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名，得使用原生代码实现，签名中需要实现sm2withsm3, openssl1.1.1只实现了sm2whithsha256
