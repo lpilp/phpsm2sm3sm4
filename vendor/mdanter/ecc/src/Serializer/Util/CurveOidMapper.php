@@ -25,8 +25,8 @@ class CurveOidMapper
 
     const NIST_P521_OID = '1.3.132.0.35';
 
-    const SM2 = '1.2.156.10197.1.301';
-
+    // const SM2 = '1.2.156.10197.1.301';
+    const SM2 = '1.1.0.0.101';
     const SECP_112R1_OID = '1.3.132.0.6';
 
     const SECP_192K1_OID = '1.3.132.0.31';
