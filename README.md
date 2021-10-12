@@ -1,6 +1,11 @@
 # php sm2 sm3 sm4 国密算法整理
 * php版本的国密sm2的签名算法，sm3的hash,  sm4的ecb加解密，要求PHP７，打开gmp支持
 * 目前如果服务器配套的使用的是openssl 1.1.1x, 目前到1.1.1k ,sm3,sm4都可以直接用openssl_xxx系列函数直接实现，不必大量的代码,但不支持sm2的签名，sm2的加解密
+
+### 使用(how to use)
+* composer require lpilp/guomi 
+* please make sure you upgrade to Composer 2+
+* 测试是在php 7.4下做的
 ### SM2
 * 该算法主体基于PHPECC算法架构，添加了sm2的椭圆参数算法， 
 * 参考了 https://github.com/ToAnyWhere/phpsm2 童鞋的sm2验签算法，密钥生成算法
