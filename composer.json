@@ -24,7 +24,7 @@
     "repositories": {
         "packagist": {
             "type": "composer",
-            "url": "https://github.com/lpilp/phpsm2sm3sm4"
+            "url": " https://mirrors.aliyun.com/composer/"
         }
     }
     
