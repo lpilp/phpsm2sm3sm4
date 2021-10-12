@@ -1,5 +1,31 @@
 {
+    "name": "lpilp/guomi",
+    "description": "国密sm2",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "recent",
+            "email": "lpilp@126.com"
+        }
+    ],
+    "minimum-stability": "stable",
     "require": {
-        "mdanter/ecc": "^0.5.2"
+        "php": ">=7.4",
+        "mdanter/ecc": "0.5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rtgm\\": "src"
+        },
+        "files": ["src/overwrite.php"]
+        
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://github.com/lpilp/phpsm2sm3sm4"
+        }
     }
+    
 }

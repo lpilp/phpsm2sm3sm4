@@ -36,7 +36,7 @@ class RandomNumberGenerator implements RandomNumberGeneratorInterface
 
         $mask = gmp_sub(gmp_pow(2, $numBits), 1);
         $integer = gmp_and($value, $mask);
-        // return gmp_init('0xa7763cd4fe7db2a2146fc09bf2d5e5a30e10c51b7e4bed00b3a26ec79ba78ff3',16);
+
         return $integer;
     }
 }

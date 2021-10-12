@@ -45,7 +45,6 @@ class NistCurve
     const NAME_P256 = 'nistp256';
     const NAME_P384 = 'nistp384';
     const NAME_P521 = 'nistp521';
-    const NAME_PSM2 = 'nistsm2';
 
     /**
      * @var GmpMathInterface
@@ -120,38 +119,6 @@ class NistCurve
 
         $x = gmp_init('b70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21', 16);
         $y = gmp_init('bd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34', 16);
-
-        return $curve->getGenerator($x, $y, $order, $randomGenerator);
-    }
-
- /**
-     * Returns an NIST P-sm2国密 curve.
-     *
-     * @return NamedCurveFp
-     */
-    public function curveSm2(): NamedCurveFp
-    {
-        $p = gmp_init('0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF', 16);
-        $b = gmp_init('0x28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93', 16);
-        $a = gmp_init('0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC', 16);
-        $parameters = new CurveParameters(256, $p, $a, $b);
-
-        return new NamedCurveFp(self::NAME_PSM2, $parameters, $this->adapter);
-    }
-
-    /**
-     * Returns an NIST sm2 generator.
-     *
-     * @param  RandomNumberGeneratorInterface $randomGenerator
-     * @return GeneratorPoint
-     */
-    public function generatorSm2(RandomNumberGeneratorInterface $randomGenerator = null): GeneratorPoint
-    {
-        $curve = $this->curveSm2();
-        $order = gmp_init('0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123', 16);
-
-        $x = gmp_init('0x32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7', 16);
-        $y = gmp_init('0xBC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0', 16);
 
         return $curve->getGenerator($x, $y, $order, $randomGenerator);
     }

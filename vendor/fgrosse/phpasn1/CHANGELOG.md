@@ -1,3 +1,16 @@
+#### v2.3.0 (2021-04)
+* Allow creating an unsigned CSR and adding the signature later
+  https://github.com/fgrosse/PHPASN1/pull/82
+
+#### v2.2.0 (2020-08)
+* support polyfills for bcmath and gmp, and add a composer.json
+  suggestion for the `phpseclib/bcmath_polyfill` for servers unable
+  to install PHP the gmp or bcmath extensions.
+
+#### v.2.1.1 & &v.2.0.2 (2018-12)
+* add stricter validation around some structures, highlighed
+  by wycheproof test suite
+
 #### v.2.1.0 (2018-03)
 * add support for `bcmath` extension (making `gmp` optional)<br>
   https://github.com/fgrosse/PHPASN1/pull/68

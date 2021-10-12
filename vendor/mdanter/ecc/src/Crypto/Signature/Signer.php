@@ -29,7 +29,7 @@ class Signer
 
     /**
      * @param PrivateKeyInterface $key
-     * @param \GMP $truncatedHash - hash truncated for use in ECDSA hash算法然后truncated by 相关的椭圆字节
+     * @param \GMP $truncatedHash - hash truncated for use in ECDSA
      * @param \GMP $randomK
      * @return SignatureInterface
      */
@@ -38,9 +38,8 @@ class Signer
         $math = $this->adapter;
         $generator = $key->getPoint();
         $modMath = $math->getModularArithmetic($generator->getOrder());
-        //怕随机数太大了，取下余
+
         $k = $math->mod($randomK, $generator->getOrder());
-        // 生成一个新的点P = kG
         $p1 = $generator->mul($k);
         $r = $p1->getX();
         $zero = gmp_init(0, 10);
@@ -78,8 +77,6 @@ class Signer
         if ($math->cmp($s, $one) < 0 || $math->cmp($s, $math->sub($n, $one)) > 0) {
             return false;
         }
-        // 签名是这样的
-        // $s = $modMath->div($modMath->add($truncatedHash, $math->mul($key->getSecret(), $r)), $k);
 
         $modMath = $math->getModularArithmetic($n);
         $c = $math->inverseMod($s, $n);

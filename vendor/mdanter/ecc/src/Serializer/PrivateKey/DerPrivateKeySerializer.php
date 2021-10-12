@@ -12,6 +12,7 @@ use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Math\MathAdapterFactory;
 use Mdanter\Ecc\Serializer\Util\CurveOidMapper;
+// echo "-------here serialize==========\n";die();
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use FG\ASN1\ExplicitlyTaggedObject;
 
@@ -51,14 +52,19 @@ class DerPrivateKeySerializer implements PrivateKeySerializerInterface
      */
     public function serialize(PrivateKeyInterface $key): string
     {
-        // var_dump($this->formatKey($key));
+
+        // CurveOidMapper::getCurveOid($key->getPoint()->getCurve());
+
+        // die();
+
+
         $privateKeyInfo = new Sequence(
             new Integer(self::VERSION),
-            new OctetString($this->formatKey($key)), //私钥16进制
+            new OctetString($this->formatKey($key)),
             new ExplicitlyTaggedObject(0, CurveOidMapper::getCurveOid($key->getPoint()->getCurve())),
-            new ExplicitlyTaggedObject(1, $this->encodePubKey($key)) //this->encodePubKey($key), 公钥16进制
+            new ExplicitlyTaggedObject(1, $this->encodePubKey($key))
         );
-        // var_dump($privateKeyInfo);
+
         return $privateKeyInfo->getBinary();
     }
 

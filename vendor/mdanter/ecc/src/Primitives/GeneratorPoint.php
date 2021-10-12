@@ -81,6 +81,7 @@ class GeneratorPoint extends Point
     public function createPrivateKey(): PrivateKeyInterface
     {
         $secret = $this->generator->generate($this->getOrder());
+
         return new PrivateKey($this->getAdapter(), $this, $secret);
     }
 

@@ -441,5 +441,6 @@ class ClassLoader
  */
 function includeFile($file)
 {
+    // echo "--- $file --\n";
     include $file;
 }

@@ -1,5 +1,5 @@
 <?php
-// 说明： 很遗憾，PHP自带的函数不支持椭圆相关的非对称加密,只支持rsa
+// 说明： PHP自带的函数好像不支持椭圆相关的非对称加密,只支持rsa
 
 $prifile = 'data/sm2.pem';
 $pubfile = 'data/sm2pub.pem';

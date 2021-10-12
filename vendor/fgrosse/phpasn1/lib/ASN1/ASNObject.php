@@ -92,6 +92,7 @@ abstract class ASNObject implements Parsable
     public function getIdentifier()
     {
         $firstOctet = $this->getType();
+
         if (Identifier::isLongForm($firstOctet)) {
             throw new LogicException(sprintf('Identifier of %s uses the long form and must therefor override "ASNObject::getIdentifier()".', get_class($this)));
         }

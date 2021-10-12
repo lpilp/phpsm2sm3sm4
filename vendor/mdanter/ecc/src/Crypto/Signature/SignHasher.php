@@ -19,7 +19,6 @@ class SignHasher implements HasherInterface
         'sha256' => 32,
         'sha384' => 48,
         'sha512' => 64,
-        'sm3' => 32,
     ];
 
     /**

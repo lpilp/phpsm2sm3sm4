@@ -398,7 +398,7 @@ class Point implements PointInterface
         $info = [
             'x' => $this->adapter->toString($this->x),
             'y' => $this->adapter->toString($this->y),
-            'n' => $this->adapter->toString($this->order),
+            'z' => $this->adapter->toString($this->order),
             'curve' => $this->curve
         ];
 

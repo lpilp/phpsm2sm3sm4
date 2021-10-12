@@ -1,8 +1,10 @@
 <?php
-include '../src/MySm4.php';
+require_once '../vendor/autoload.php';
+use Rtgm\sm\RtSm4;
+
 $key = "0123456789abcdef";
 
-$sm4 = new MySm4();
+$sm4 = new RtSm4();
 
 $data = '我爱你ILOVEYOU!';
 
