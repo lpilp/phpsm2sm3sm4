@@ -1,9 +1,11 @@
 <?php
+/**
+ *  source: https://github.com/lizhichao/sm 
+ */
 namespace Rtgm\smecc\SM4;
-
 class Sm4
 {
-    static $SM4_CK = array(
+    private $ck = [
         0x00070e15, 0x1c232a31, 0x383f464d, 0x545b6269,
         0x70777e85, 0x8c939aa1, 0xa8afb6bd, 0xc4cbd2d9,
         0xe0e7eef5, 0xfc030a11, 0x181f262d, 0x343b4249,
@@ -12,9 +14,9 @@ class Sm4
         0x30373e45, 0x4c535a61, 0x686f767d, 0x848b9299,
         0xa0a7aeb5, 0xbcc3cad1, 0xd8dfe6ed, 0xf4fb0209,
         0x10171e25, 0x2c333a41, 0x484f565d, 0x646b7279
-    );
+    ];
 
-    static $SM4_SBOX = array(
+    private $Sbox = [
         0xd6, 0x90, 0xe9, 0xfe, 0xcc, 0xe1, 0x3d, 0xb7, 0x16, 0xb6, 0x14, 0xc2, 0x28, 0xfb, 0x2c, 0x05,
         0x2b, 0x67, 0x9a, 0x76, 0x2a, 0xbe, 0x04, 0xc3, 0xaa, 0x44, 0x13, 0x26, 0x49, 0x86, 0x06, 0x99,
         0x9c, 0x42, 0x50, 0xf4, 0x91, 0xef, 0x98, 0x7a, 0x33, 0x54, 0x0b, 0x43, 0xed, 0xcf, 0xac, 0x62,
@@ -31,166 +33,317 @@ class Sm4
         0x0a, 0xc1, 0x31, 0x88, 0xa5, 0xcd, 0x7b, 0xbd, 0x2d, 0x74, 0xd0, 0x12, 0xb8, 0xe5, 0xb4, 0xb0,
         0x89, 0x69, 0x97, 0x4a, 0x0c, 0x96, 0x77, 0x7e, 0x65, 0xb9, 0xf1, 0x09, 0xc5, 0x6e, 0xc6, 0x84,
         0x18, 0xf0, 0x7d, 0xec, 0x3a, 0xdc, 0x4d, 0x20, 0x79, 0xee, 0x5f, 0x3e, 0xd7, 0xcb, 0x39, 0x48
-    );
+    ];
 
-    static $SM4_FK = array(0xA3B1BAC6, 0x56AA3350, 0x677D9197, 0xB27022DC);
+    private $fk = [0xA3B1BAC6, 0x56AA3350, 0x677D9197, 0xB27022DC];
 
-    private $_rk = array();
-    private $_block_size = 16;
+    private $rk = [];
 
-    public function __construct()
+    private $b = '';
+
+    private $len = 16;
+
+
+    /**
+     * Sm4 constructor.
+     * @param string $key 秘钥长度16位
+     * @param string $b 不是16的倍数 需要的补码
+     * @throws \Exception
+     */
+    public function __construct($key, $b = ' ')
     {
-        if (PHP_INT_SIZE < 8) {
-            throw new \Exception('64bit OS supported only');
-        }
-        if (version_compare(PHP_VERSION, "7.0", "<")) {
-            throw new \Exception('php version 7.0 or greater');
+        $this->ck16($key);
+        $this->crk($key);
+    }
+
+    private function dd(&$data)
+    {
+        $n    = strlen($data) % $this->len;
+        $data = $data . str_repeat($this->b, $n);
+    }
+
+    private function ck16($str)
+    {
+        if (strlen($str) !== $this->len) {
+            throw new \Exception('秘钥长度为16位');
         }
     }
 
-    public function encrypt($key, $data)
+    private function add($v)
     {
-        $this->_rk = array();
-        $this->sM4KeySchedule($key);
-        $bytes = $this->pad($data);
-        $chunks = array_chunk($bytes, $this->_block_size);
-        $ciphertext = "";
-        foreach ($chunks as $chunk) {
-            $ciphertext .= $this->sM4Encrypt($chunk);
+        $arr = unpack('N*', $v);
+        $max = 0xffffffff;
+        $j   = 1;
+        for ($i = 4; $i > 0; $i--) {
+            if ($arr[$i] > $max - $j) {
+                $j       = 1;
+                $arr[$i] = 0;
+            } else {
+                $arr[$i] += $j;
+                break;
+            }
         }
-        return bin2hex($ciphertext);
-        return base64_encode($ciphertext);
+        return pack('N*', ...$arr);
+    }
+
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function deDataCtr($str, $iv)
+    {
+        return $this->enDataCtr($str, $iv);
+    }
+
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function enDataCtr($str, $iv)
+    {
+        $this->ck16($iv);
+        $r = '';
+        $this->dd($str);
+        $l = strlen($str) / $this->len;
+        for ($i = 0; $i < $l; $i++) {
+            $s  = substr($str, $i * $this->len, $this->len);
+            $tr = [];
+            $this->encode(array_values(unpack('N*', $iv)), $tr);
+            $s1 = pack('N*', ...$tr);
+            $s1 = $s1 ^ $s;
+            $iv = $this->add($iv);
+            $r  .= $s1;
+        }
+        return $r;
     }
 
 
-    public function decrypt($key, $data)
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function enDataOfb($str, $iv)
     {
-        $this->_rk = array();
-        // $data = base64_decode($data);
-        $data = hex2bin($data);
-        if (strlen($data) < 0 || strlen($data) % $this->_block_size != 0) {
-            return false;
+        $this->ck16($iv);
+        $r = '';
+        $this->dd($str);
+        $l = strlen($str) / $this->len;
+        for ($i = 0; $i < $l; $i++) {
+            $s  = substr($str, $i * $this->len, $this->len);
+            $tr = [];
+            $this->encode(array_values(unpack('N*', $iv)), $tr);
+            $iv = pack('N*', ...$tr);
+            $s1 = $s ^ $iv;
+            $r  .= $s1;
         }
-        $this->sM4KeySchedule($key);
-        $bytes = unpack("C*", $data);
-        $chunks = array_chunk($bytes, $this->_block_size);
-        $plaintext = "";
-        foreach ($chunks as $chunk) {
-            $plaintext .= substr($this->sM4Decrypt($chunk), 0, 16);
-        }
-        $plaintext = $this->un_pad($plaintext);
-        return $plaintext;
+        return $r;
     }
 
-    private function sM4Decrypt($cipherText)
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function deDataOfb($str, $iv)
     {
-        $x = array();
-        for ($j = 0; $j < 4; $j++) {
-            $x[$j] = ($cipherText[$j * 4] << 24) | ($cipherText[$j * 4 + 1] << 16) | ($cipherText[$j * 4 + 2] << 8)
-                | ($cipherText[$j * 4 + 3]);
+        return $this->enDataOfb($str, $iv);
+    }
+
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function deDataCfb($str, $iv)
+    {
+        $this->ck16($iv);
+        $r = '';
+        $this->dd($str);
+        $l = strlen($str) / $this->len;
+        for ($i = 0; $i < $l; $i++) {
+            $s  = substr($str, $i * $this->len, $this->len);
+            $tr = [];
+            $this->encode(array_values(unpack('N*', $iv)), $tr);
+            $s1 = pack('N*', ...$tr);
+            $s1 = $s ^ $s1;
+            $iv = $s;
+            $r  .= $s1;
         }
+        return $r;
+    }
+
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function enDataCfb($str, $iv)
+    {
+        $this->ck16($iv);
+        $r = '';
+        $this->dd($str);
+        $l = strlen($str) / $this->len;
+        for ($i = 0; $i < $l; $i++) {
+            $s  = substr($str, $i * $this->len, $this->len);
+            $tr = [];
+            $this->encode(array_values(unpack('N*', $iv)), $tr);
+            $s1 = pack('N*', ...$tr);
+            $iv = $s ^ $s1;
+            $r  .= $iv;
+        }
+        return $r;
+    }
+
+
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function enDataCbc($str, $iv)
+    {
+        $this->ck16($iv);
+        $r = '';
+        $this->dd($str);
+        $l = strlen($str) / $this->len;
+        for ($i = 0; $i < $l; $i++) {
+            $s  = substr($str, $i * $this->len, $this->len);
+            $s  = $iv ^ $s;
+            $tr = [];
+            $this->encode(array_values(unpack('N*', $s)), $tr);
+            $iv = pack('N*', ...$tr);
+            $r  .= $iv;
+        }
+        return $r;
+    }
+
+    /**
+     * @param string $str 加密字符串
+     * @param string $iv 初始化字符串16位
+     * @return string
+     * @throws \Exception
+     */
+    public function deDataCbc($str, $iv)
+    {
+        $this->ck16($iv);
+        $r = '';
+        $this->dd($str);
+        $l = strlen($str) / $this->len;
+        for ($i = 0; $i < $l; $i++) {
+            $s  = substr($str, $i * $this->len, $this->len);
+            $tr = [];
+            $this->decode(array_values(unpack('N*', $s)), $tr);
+            $s1 = pack('N*', ...$tr);
+            $s1 = $iv ^ $s1;
+            $iv = $s;
+            $r  .= $s1;
+        }
+        return $r;
+    }
+
+
+    /**
+     * @param string $str 加密字符串
+     * @return string
+     */
+    public function enDataEcb($str)
+    {
+        $r = [];
+        $this->dd($str);
+        $ar = unpack('N*', $str);
+        do {
+            $this->encode([current($ar), next($ar), next($ar), next($ar)], $r);
+        } while (next($ar));
+        return pack('N*', ...$r);
+    }
+
+    /**
+     * @param string $str 解密字符串
+     * @return string
+     */
+    public function deDataEcb($str)
+    {
+        $r = [];
+        $this->dd($str);
+        $ar = unpack('N*', $str);
+        do {
+            $this->decode([current($ar), next($ar), next($ar), next($ar)], $r);
+        } while (next($ar));
+        return pack('N*', ...$r);
+    }
+
+    private function encode($ar, &$r)
+    {
         for ($i = 0; $i < 32; $i++) {
-            $tmp = $x[$i + 1] ^ $x[$i + 2] ^ $x[$i + 3] ^ $this->_rk[31 - $i];
-            $buf = (self::$SM4_SBOX[($tmp >> 24) & 0xFF]) << 24 | (self::$SM4_SBOX[($tmp >> 16) & 0xFF]) << 16
-                | (self::$SM4_SBOX[($tmp >> 8) & 0xFF]) << 8 | (self::$SM4_SBOX[$tmp & 0xFF]);
-            $x[$i + 4] = $x[$i] ^ ($buf ^ $this->sm4Rotl32(($buf), 2) ^ $this->sm4Rotl32(($buf), 10)
-                    ^ $this->sm4Rotl32(($buf), 18) ^ $this->sm4Rotl32(($buf), 24));
+            $ar[$i + 4] = $this->f($ar[$i], $ar[$i + 1], $ar[$i + 2], $ar[$i + 3], $this->rk[$i]);
         }
-        $plainText = array();
-        for ($k = 0; $k < 4; $k++) {
-            $plainText[4 * $k] = ($x[35 - $k] >> 24) & 0xFF;
-            $plainText[4 * $k + 1] = ($x[35 - $k] >> 16) & 0xFF;
-            $plainText[4 * $k + 2] = ($x[35 - $k] >> 8) & 0xFF;
-            $plainText[4 * $k + 3] = ($x[35 - $k]) & 0xFF;
-        }
-        return $this->bytesToString($plainText);
+        $r[] = $ar[35];
+        $r[] = $ar[34];
+        $r[] = $ar[33];
+        $r[] = $ar[32];
     }
 
-    private function sM4Encrypt($plainText)
+    private function decode($ar, &$r)
     {
-        $x = array();
-        for ($j = 0; $j < 4; $j++) {
-            $x[$j] = ($plainText[$j * 4] << 24) | ($plainText[$j * 4 + 1] << 16) | ($plainText[$j * 4 + 2] << 8)
-                | ($plainText[$j * 4 + 3]);
-        }
         for ($i = 0; $i < 32; $i++) {
-            $tmp = $x[$i + 1] ^ $x[$i + 2] ^ $x[$i + 3] ^ $this->_rk[$i];
-            $buf = (self::$SM4_SBOX[($tmp >> 24) & 0xFF]) << 24 | (self::$SM4_SBOX[($tmp >> 16) & 0xFF]) << 16
-                | (self::$SM4_SBOX[($tmp >> 8) & 0xFF]) << 8 | (self::$SM4_SBOX[$tmp & 0xFF]);
-            $x[$i + 4] = $x[$i] ^ ($buf ^ $this->sm4Rotl32(($buf), 2) ^ $this->sm4Rotl32(($buf), 10)
-                    ^ $this->sm4Rotl32(($buf), 18) ^ $this->sm4Rotl32(($buf), 24));
+            $ar[$i + 4] = $this->f($ar[$i], $ar[$i + 1], $ar[$i + 2], $ar[$i + 3], $this->rk[31 - $i]);
         }
-        $cipherText = array();
-        for ($k = 0; $k < 4; $k++) {
-            $cipherText[4 * $k] = ($x[35 - $k] >> 24) & 0xFF;
-            $cipherText[4 * $k + 1] = ($x[35 - $k] >> 16) & 0xFF;
-            $cipherText[4 * $k + 2] = ($x[35 - $k] >> 8) & 0xFF;
-            $cipherText[4 * $k + 3] = ($x[35 - $k]) & 0xFF;
-        }
-        return $this->bytesToString($cipherText);
+        $r[] = $ar[35];
+        $r[] = $ar[34];
+        $r[] = $ar[33];
+        $r[] = $ar[32];
     }
 
-    private function stringToBytes($string)
+    private function crk($key)
     {
-        return unpack('C*', $string);
-    }
-
-    private function bytesToString($bytes)
-    {
-        return vsprintf(str_repeat('%c', count($bytes)), $bytes);
-    }
-
-    private function pad($data)
-    {
-        $bytes = $this->stringToBytes($data);
-        $rem = $this->_block_size - count($bytes) % $this->_block_size;
-        for ($i = 0; $i < $rem; $i++) {
-            array_push($bytes, $rem);
-        }
-        return $bytes;
-    }
-
-    private function un_pad($data)
-    {
-        $bytes = $this->stringToBytes($data);
-        $rem = $bytes[count($bytes)];
-        $bytes = array_slice($bytes, 0, count($bytes) - $rem);
-        return $this->bytesToString($bytes);
-    }
-
-    private function sm4Rotl32($buf, $n)
-    {
-        return (($buf << $n) & 0xffffffff) | ($buf >> (32 - $n));
-    }
-
-    private function sM4KeySchedule($key)
-    {
-        $this->_rk = array();
-        $key = array_values(unpack("C*", $key));
-        $k = array();
-//        for ($i = 0; $i < 4; $i++) {
-//            $k[$i] = self::$SM4_FK[$i]
-//                ^ ((($key[4 * $i] ?? 0) << 24)
-//                    | (($key[4 * $i + 1] ?? 0) << 16)
-//                    | (($key[4 * $i + 2] ?? 0) << 8)
-//                    | ($key[4 * $i + 3] ?? null));
-//        }
-
-        for ($i = 0; $i < 4; $i++) {
-            $k[$i] = self::$SM4_FK[$i]
-                ^ (((isset($key[4 * $i]) ?  $key[4 * $i] : 0) << 24)
-                    | ((isset($key[4 * $i + 1]) ? $key[4 * $i + 1] : 0) << 16)
-                    | ((isset($key[4 * $i + 2]) ? $key[4 * $i + 2] : 0) << 8)
-                    | (isset($key[4 * $i + 3]) ? $key[4 * $i + 3] : null));
-        }
-        for ($j = 0; $j < 32; $j++) {
-            $tmp = $k[$j + 1] ^ $k[$j + 2] ^ $k[$j + 3] ^ self::$SM4_CK[$j];
-            $buf = (self::$SM4_SBOX[($tmp >> 24) & 0xFF]) << 24 | (self::$SM4_SBOX[($tmp >> 16) & 0xFF]) << 16
-                | (self::$SM4_SBOX[($tmp >> 8) & 0xFF]) << 8 | (self::$SM4_SBOX[$tmp & 0xFF]);
-            $k[$j + 4] = $k[$j] ^ (($buf) ^ ($this->sm4Rotl32(($buf), 13)) ^ ($this->sm4Rotl32(($buf), 23)));
-            $this->_rk[$j] = $k[$j + 4];
+        $keys = array_values(unpack('N*', $key));
+        $keys = [
+            $keys[0] ^ $this->fk[0],
+            $keys[1] ^ $this->fk[1],
+            $keys[2] ^ $this->fk[2],
+            $keys[3] ^ $this->fk[3]
+        ];
+        for ($i = 0; $i < 32; $i++) {
+            $this->rk[] = $keys[] = $keys[$i] ^ $this->t1($keys[$i + 1] ^ $keys[$i + 2] ^ $keys[$i + 3] ^ $this->ck[$i]);
         }
     }
+
+    private function lm($a, $n)
+    {
+        return ($a >> (32 - $n) | (($a << $n) & 0xffffffff));
+    }
+
+    private function f($x0, $x1, $x2, $x3, $r)
+    {
+        return $x0 ^ $this->t($x1 ^ $x2 ^ $x3 ^ $r);
+    }
+
+    private function s($n)
+    {
+        return $this->Sbox[($n & 0xff)] | $this->Sbox[(($n >> 8) & 0xff)] << 8 | $this->Sbox[(($n >> 16) & 0xff)] << 16 | $this->Sbox[(($n >> 24) & 0xff)] << 24;
+    }
+
+    private function t($n)
+    {
+        $b = $this->s($n);
+        return $b ^ $this->lm($b, 2) ^ $this->lm($b, 10) ^ $this->lm($b, 18) ^ $this->lm($b, 24);
+    }
+
+    private function t1($n)
+    {
+        $b = $this->s($n);
+        return $b ^ $this->lm($b, 13) ^ $this->lm($b, 23);
+    }
+
 
 }
-
