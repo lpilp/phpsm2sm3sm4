@@ -1,5 +1,5 @@
 # php sm2 sm3 sm4 国密算法整理
-* php版本的国密sm2的签名算法，sm3的hash,  sm4的ecb加解密，要求PHP７，打开gmp支持
+* php版本的国密sm2的签名算法，sm3的hash,  sm4的对称加解密，要求PHP７，打开gmp支持
 * 目前如果服务器配套的使用的是openssl 1.1.1x, 目前到1.1.1.l(L) ,sm3,sm4都可以直接用openssl_xxx系列函数直接实现，不必大量的代码,但不支持sm2的签名，sm2的加解密
 * 有一个sm3, sm4的比较好的代码： https://github.com/lizhichao/sm  可以使用composer安装
 
@@ -16,12 +16,12 @@
 * 由于 openssl没有实现sm2withsm3算法，用系统函数无法实现签名及证书的自签名分发
 
 ### SM3
-* 该算法直接使用 https://github.com/ToAnyWhere/phpsm2 童鞋的sm3, 未做修改
+* 该算法直接使用 https://github.com/ToAnyWhere/phpsm2 中sm2签名用到的匹配sm3, 未做修改
 * 也可使用 openssl的函数, 详见openssl_tsm3.php
 
 ### SM4
-* 该算法直接使用 https://github.com/yinfany/sm 童鞋的sm4算法
-* 只实现了ecb算法，没有实现cbc算法
+* 该算法直接封装使用 https://github.com/lizhichao/sm  的sm4算法， 同时该项目支持 sm3,sm4 ,可以composer安装
+* 由于sm4-ecb, sm4-cbc加密需要补齐，项目lizhichao/sm项目未做补齐操作，这里封装的时候，针对这两个算法做了补齐操作， 其他如sm4-ctr,sm4-cfb,sm4-ofb等，可以直接用
 * 在openssl 1.1.1下可使用系统的函数，已支持sm4-cbc,sm4-cfb,sm4-ctr,sm4-ecb,sm4-ofb，  详见openssl_tsm4.php
 
 ### 总结
