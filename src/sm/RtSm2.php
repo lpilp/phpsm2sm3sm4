@@ -124,7 +124,7 @@ class RtSm2 {
      * SM2 私钥解密算法
      *
      * @param string $document
-     * @param string $publicKey
+     * @param string $privateKey
      * @return string
      */
     public function doDecrypt($encryptData,$privateKey)
