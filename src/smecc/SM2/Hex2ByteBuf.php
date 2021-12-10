@@ -70,6 +70,38 @@ class Hex2ByteBuf
             $b[$i] = hexdec($temp);
             $i = $i + 1;
         }
+
+        return $b;
+    }
+    public static function HexStringToByteArray2($InString)
+    {
+        // for (
+        //     $m = strlen($InString);
+        //     $m < 64;
+        //     $m++
+        // ) {
+        //     $InString = '0' . $InString;
+        // }
+        $g_len = 0;
+        $nlen = 0;
+        $n = 0;
+        $i = 0;
+        $temp = '';
+        $nlen = strlen($InString);
+        if ($nlen < 16) $g_len = 16;
+        $g_len = $nlen / 2;
+
+        for (
+            $n = 0;
+            $n < $nlen;
+            $n = $n + 2
+        ) {
+            $temp = substr($InString, $n, 2);
+            $temp = '0x' . $temp;
+            $b[$i] = hexdec($temp);
+            $i = $i + 1;
+        }
+
         return $b;
     }
 }

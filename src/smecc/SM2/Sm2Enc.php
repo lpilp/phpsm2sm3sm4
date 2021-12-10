@@ -10,7 +10,7 @@ class SM2Enc
     private const  MAX_ENCLEN = 128; //最大的加密长度分组
     private const  MAX_DECLEN = (self::MAX_ENCLEN + self::SM2_ADDBYTE); //最大的解密长度分组
 
-/*     public function SM2_EncStringBySoft($InString, $PubKeyX, $PubKeyY,$generator)
+/*     public function SM2_EncStringBySoft($InString, $PubKeyX, $PubKeyY, $generator)
     {
 
         $Kx = gmp_init($PubKeyX, 16);
@@ -84,6 +84,7 @@ class SM2Enc
         $OutBuf=array();
         for ( $n = 0;  $n <  $c1_len;  $n++)
         {
+            
             $OutBuf[$n] =  $bc1[ $n];
         }
         for ( $n = 0;  $n <  $InBuflen;  $n++)

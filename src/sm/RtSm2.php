@@ -21,10 +21,19 @@ class RtSm2 {
     protected $userId = '1234567812345678';
     // 是否固定签名不随机，好处是同一段参数的签名固定，增大别人的猜测的难度
     protected $useDerandomizedSignatures = true;
-    //输入输出的签名方式 16进制的还是base64
+    // 是否固定加密不随机，算法中的是否每次都用不同的中间椭圆，如果固定的话，
+    // 同样的文本加密后的数据是一样的，但速度会更快一些，随机的话，每次加密出来的数据不一样
+    protected $useDerandomizedEncrypt = false;
+    // 输入输出的签名方式 16进制的还是base64
     protected $formatSign = 'hex';
-    //可扩展自定义多种返回签名方式
+    // 可扩展自定义多种返回签名方式
     protected $arrFormat = ['hex','base64'];
+    // 加密时的中间椭圆,取任意的sm2中间椭圆都可以，useDerandomizedEncrypt = true时使用，为false时每次加密，重新生成一个
+    protected $foreignKey= [
+        '21fbd478026e2d668e3570e514de0d312e443d1e294c1ca785dfbfb5f74de225',
+        '04e27c3780e7069bda7082a23a489d77587ce309583ed99253f66e1d9833ed1a1d0b5ce86dc6714e9974cf258589139d7b1855e8c9fa2f2c1175ee123a95a23e9b'  
+    ];
+    protected $cipher = null;
 
     function __construct($formatSign='hex') {
         $this->adapter = RtEccFactory::getAdapter();
@@ -54,7 +63,6 @@ class RtSm2 {
         $pubY = $this->decHex( $pubPoint->getY() );
         $publicKey = '04'.$pubX.$pubY;
         return [$privateKey, $publicKey];
-
     }
 
     /**
@@ -77,7 +85,77 @@ class RtSm2 {
 
         return [$privateKeyPem, $publicKeyPem];
     }
+    /**
+     * SM2 公钥加密算法
+     *
+     * @param string $document
+     * @param string $publicKey
+     * @return string
+     */
+    public function doEncrypt($document, $publicKey)
+    {
+        $adapter = $this->adapter;
+        $generator = $this->generator;
+        $this->cipher = new \Rtgm\smecc\SM2\Cipher();
+        $arrMsg = Hex2ByteBuf::HexStringToByteArray2(bin2hex($document));
 
+        list( $pubKeyX, $pubKeyY ) = $this->_getKeyXY( $publicKey );
+        $key = $this->_getPubKeyObject( $pubKeyX, $pubKeyY );
+        $point = new Point( $adapter, $generator->getCurve(), gmp_init( $pubKeyX, 16 ), gmp_init( $pubKeyY, 16 ) );
+        // 是否使用固定的中间椭圆加密，
+        if($this->useDerandomizedEncrypt){
+            $c1 = $this->cipher->initEncipher($point,$this->foreignKey);
+        } else {
+            $c1 = $this->cipher->initEncipher($point,null);
+        }
+        
+        // print_r($c1);
+        
+        $arrMsg = $this->cipher->encryptBlock($arrMsg); 
+        $c2 = strtolower(Hex2ByteBuf::ByteArrayToHexString($arrMsg)) ;
+        // print_R($c2);echo "\n";
+        $c3 = strtolower(Hex2ByteBuf::ByteArrayToHexString($this->cipher->Dofinal()));
+        // print_r($c1.$c3.$c2);
+
+        return $c1.$c3.$c2;
+
+    }
+    /**
+     * SM2 私钥解密算法
+     *
+     * @param string $document
+     * @param string $publicKey
+     * @return string
+     */
+    public function doDecrypt($encryptData,$privateKey)
+    {
+        // $encryptData = $c1.$c3.$c2
+        $adapter = $this->adapter;
+        $generator = $this->generator;
+        $this->cipher = new \Rtgm\smecc\SM2\Cipher();
+        $c1X = substr($encryptData,0,64);
+        $c1Y = substr($encryptData,strlen($c1X),64);
+        $c1Length = strlen($c1X) + strlen($c1Y);
+        $c3 = substr($encryptData,$c1Length,64);
+        $c2 = substr($encryptData,$c1Length+strlen($c3));
+        $p1 = new Point( $adapter, $generator->getCurve(), gmp_init($c1X, 16 ), gmp_init( $c1Y, 16 ) );
+        $this->cipher->initDecipher($p1,$privateKey);
+
+        $arrMsg = Hex2ByteBuf::HexStringToByteArray2($c2);
+        $arrMsg = $this->cipher->decryptBlock($arrMsg); 
+        $document = hex2bin(Hex2ByteBuf::ByteArrayToHexString($arrMsg));
+
+        $c3_ = strtolower(Hex2ByteBuf::ByteArrayToHexString($this->cipher->Dofinal()));
+        if($c3 == $c3_){ //hash签名相同，
+            return $document;
+        } else {
+            return '';
+        }
+    }
+    /**
+     * SM2 签名明文16进制密码
+     *
+     */
     public function doSign( $document, $privateKey, $userId = null ) {
         if ( empty( $userId ) ) {
             $userId = $this->userId;
@@ -89,7 +167,10 @@ class RtSm2 {
         $key = new PrivateKey( $adapter, $generator, $secret );
         return $this->_dosign( $document, $key, $adapter, $generator, $userId, $algorithm );
     }
-
+    /**
+     * SM2 签名pem密码
+     *
+     */
     public function doSignOutKey( $document, $privateKeyFile, $userId = null ) {
         if ( empty( $userId ) ) {
             $userId = $this->userId;
