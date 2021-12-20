@@ -11,7 +11,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=7.4",
+        "php": ">=7.2",
         "mdanter/ecc": "^1.0"
     },
     "autoload": {
