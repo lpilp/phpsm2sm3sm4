@@ -9,8 +9,8 @@ $privatefile = "./data/sm2.pem";
 $userId = '1234567812345678';
 $document = "我爱你ILOVEYOU!";
 
-define('GK',0);
-define('SIGN',0);
+define('GK',1);
+define('SIGN',1);
 define('SIGNPEM',1);
 //返回的签名16进制还是base64, 目前可选hex,与base64两种
 $sm2 = new RtSm2('base64');
