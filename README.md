@@ -6,7 +6,7 @@
 ### 使用(how to use)
 * composer require lpilp/guomi 
 * please make sure you upgrade to Composer 2+
-* 测试是在php 7.4下做的
+* 测试是在php 7.4下做的，支持7.2
 ### SM2
 * 签名验签算法主体基于PHPECC算法架构，添加了sm2的椭圆参数， 
 * 参考了 https://github.com/ToAnyWhere/phpsm2 童鞋的sm2验签算法，密钥生成算法
