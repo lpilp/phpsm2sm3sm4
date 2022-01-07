@@ -1,12 +1,12 @@
 # php sm2 sm3 sm4 国密算法整理
-* php版本的国密sm2的签名算法，非对称加解密算法（非对称加密刚上线，目前测试无问题，不能保证兼容其他语言，有问题可以提issues），sm3的hash,  sm4的对称加解密，要求PHP７，打开gmp支持
+* 本项目支持php版本的国密sm2的签名算法，非对称加解密算法（非对称加密刚上线，目前测试无问题，不能保证兼容其他语言，有问题可以提issues），sm3的hash,  sm4的对称加解密，要求PHP７，打开gmp支持
 * 目前如果服务器配套的使用的是openssl 1.1.1x, 目前到1.1.1.l(L) ,sm3,sm4都可以直接用openssl_xxx系列函数直接实现，不必大量的代码,但不支持sm2的签名，sm2的加解密
 * 有一个sm3, sm4的比较好的代码： https://github.com/lizhichao/sm  可以使用composer安装，只是这个的ecb, cbc没有做补齐
 
 ### 使用(how to use)
 * composer require lpilp/guomi 
 * please make sure you upgrade to Composer 2+
-* 测试是在php 7.4下做的，支持7.2及以上版本
+* PHP >=7.2
 ### SM2
 * 签名验签算法主体基于PHPECC算法架构，添加了sm2的椭圆参数， 
 * 参考了 https://github.com/ToAnyWhere/phpsm2 童鞋的sm2验签算法，密钥生成算法
@@ -27,7 +27,7 @@
 
 ### 总结
 * 这里封装的测试函数已与相关的js, python, java都可以互签互认
-* js: https://github.com/JuneAndGreen/sm-crypto
-* python: https://github.com/duanhongyi/gmssl
+* js: https://github.com/JuneAndGreen/sm-crypto 一个注意点就是： js的中文字符转成byte[]时，缺省的是unicode编码两字节，需要转成utf8的三字节编码，一个简单的方案 unescape(encodeURIComponent(str)) 然后再一个字节一个字节读就行了
+* python: https://github.com/duanhongyi/gmssl  使用 pip install gmssl 安装就可， 注意的就是在python2下 ， string与byte是可以隐式转换的，在python3下需要显式地将string转成byte
 * java: https://github.com/ZZMarquis/gmhelper
 * openssl: 升到1.1.1以后，支持sm3,sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名，得使用原生代码实现，签名中需要实现sm2withsm3, openssl1.1.1只实现了sm2whithsha256
