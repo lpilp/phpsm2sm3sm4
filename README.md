@@ -30,4 +30,4 @@
 * js: https://github.com/JuneAndGreen/sm-crypto 一个注意点就是： js的中文字符转成byte[]时，缺省的是unicode编码两字节，需要转成utf8的三字节编码，一个简单的方案 unescape(encodeURIComponent(str)) 然后再一个字节一个字节读就行了
 * python: https://github.com/duanhongyi/gmssl  使用 pip install gmssl 安装就可， 注意的就是在python2下 ， string与byte[]是可以隐式转换的，在python3下需要显式地将string转成byte[]
 * java: https://github.com/ZZMarquis/gmhelper 注意下java中文的转码问题，getBytes("UTF-8"), 要加上编码类型， 因为 getBytes()函数的缺省编码是随操作系统的，如果是在中文版的windows中使用，缺省是GBK编码，就会出现中文的编码的问题，而造成签名无法通过
-* openssl: 升到1.1.1以后，支持sm3,sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名，得使用原生代码实现，签名中需要实现sm2withsm3, openssl1.1.1只实现了sm2whithsha256
+* openssl: 升到1.1.1以后，支持sm3,sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名，得使用原生代码实现，签名中需要实现sm2withsm3, openssl1.1.1只实现了sm2whithsha256;还有一点很诡异，用yum/dnf安装的openssl只支持sm3, 如果是自己编译安装的就支持sm3,sm4
