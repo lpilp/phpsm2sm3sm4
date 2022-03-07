@@ -26,12 +26,14 @@
 * 由于sm4-ecb, sm4-cbc加密需要补齐，项目lizhichao/sm项目未做补齐操作，这里封装的时候，针对这两个算法做了补齐操作， 其他如sm4-ctr,sm4-cfb,sm4-ofb等，可以直接用
 * 在openssl 1.1.1下可使用系统的函数，已支持sm4-cbc,sm4-cfb,sm4-ctr,sm4-ecb,sm4-ofb，  详见openssl_tsm4.php
 
-### 总结
+### SM2总结
 * 这里封装的测试函数已与相关的js, python, java都可以互签互认
 * js: https://github.com/JuneAndGreen/sm-crypto 一个注意点就是： js的中文字符转成byte[]时，缺省的是unicode编码两字节，需要转成utf8的三字节编码，一个简单的方案 unescape(encodeURIComponent(str)) 然后再一个字节一个字节读就行了
 * python: https://github.com/duanhongyi/gmssl  使用 pip install gmssl 安装就可， 注意的就是在python2下 ， string与byte[] 是可以隐式转换的，在python3下需要显式地将string转成byte[]
 * java: https://github.com/ZZMarquis/gmhelper 注意下java中文的转码问题，getBytes("UTF-8"), 要加上编码类型， 因为 getBytes()函数的缺省编码是随操作系统的，如果是在中文版的windows中使用，缺省是GBK编码，就会出现中文的编码的问题，而造成签名无法通过
 * openssl: 升到1.1.1以后，支持sm3,sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名，得使用原生代码实现，签名中需要实现sm2withsm3, openssl1.1.1只实现了sm2whithsha256;还有一点很诡异，用yum/dnf安装的openssl只支持sm3, 如果是自己编译安装的就支持sm3,sm4
-+ go: https://github.com/tjfoc/gmsm 天津一家做区块链的公司开源的项目，在go方面可以说是最早开源的了，issue有点多，主要是在sm2上，还是商业公司开源代码的通病，自己弄自己的，没有考虑大众的使用，主要有两个问题：
++ go: https://github.com/tjfoc/gmsm 一家做区块链的公司开源的项目，在go方面可以说是最早开源的了，sm2主要有两个问题：
   1. 暂无使用外部密码明文生成公私钥构造函数，比较简单可自行添加
-  2. sm2的加解密例子中只有EncryptAsn1，这种asn1编码过的例子，其实在sm2中有直接Encrypt函数， sm2.Encrypt(pub, data, rand, C1C3C2)， 与其它语言生成的加密串在c1部分多加了一个\x04, 在与其它语言进行互通时，请自行处理，用其他语言解密去掉\x04,用这个go解密加个\x04,请自行处理 
+  2. sm2的非对称加解密例子中使用EncryptAsn1这个函数，其实在sm2中有直接Encrypt函数， sm2.Encrypt(pub, data, rand, C1C3C2)， 与其它语言生成的加密串在c1部分多加了一个\x04, 在与其它语言进行互通时，去掉\x04,如是其他语言加密的，且前面加个\x04, 该go语言函数就可以解出来了
+  3. 签名与验签的方法倒是没有什么问题，到少与本项目的PHP语言是互签互认的。 
+  4. sm4的对称加解密cbc等需要IV向量的模式，将iv做为全局变量了，对于不同的串要使用不同的iv时，就会出现麻烦，可看它的issue里有相关的解决方案，这里总结主要是针对sm2
