@@ -57,6 +57,7 @@ class RtSm2 {
         //取出私钥16进制表示出来
         $privateKey = $this->decHex( $private->getSecret() );
         //取出公钥的椭圆点
+        
         $pubPoint = $private->getPublicKey()->getPoint();
         //公钥上的点x, y
         $pubX = $this->decHex( $pubPoint->getX() );
@@ -334,7 +335,7 @@ class RtSm2 {
         }
         return implode("",$res);
     }
-    private function decHex($dec): string
+    private function decHex($dec,$len=64): string
     {
         if(gettype($dec)=='string'){
             $dec = gmp_init($dec, 10);
@@ -345,8 +346,12 @@ class RtSm2 {
 
         $hex = gmp_strval($dec, 16);
 
-        if (strlen($hex) % 2 != 0) {
+        /* if (strlen($hex) % 2 != 0) {
             $hex = '0'.$hex;
+        } */
+        $left = strlen($hex) - $len;
+        if($left >0){
+            $hex = str_repeat('0',$left) . $hex;
         }
 
         return $hex;
