@@ -349,7 +349,7 @@ class RtSm2 {
         /* if (strlen($hex) % 2 != 0) {
             $hex = '0'.$hex;
         } */
-        $left = strlen($hex) - $len;
+        $left = $len - strlen($hex) ;
         if($left >0){
             $hex = str_repeat('0',$left) . $hex;
         }
