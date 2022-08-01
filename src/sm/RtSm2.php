@@ -19,11 +19,12 @@ class RtSm2 {
     protected $adapter = null;
     protected $generator = null;
     protected $userId = '1234567812345678';
-    // 是否固定签名不随机，好处是同一段参数的签名固定，增大别人的猜测的难度
+    // 是否固定签名不随机，好处是同一段参数的签名固定，增大别人的猜测的难度,
+    // 同样的key + document每次签名是一样的，如果为false则每次不一样
     protected $useDerandomizedSignatures = true;
     // 是否固定加密不随机，算法中的是否每次都用不同的中间椭圆，如果固定的话，
     // 同样的文本加密后的数据是一样的，但速度会更快一些，随机的话，每次加密出来的数据不一样
-    protected $useDerandomizedEncrypt = false;
+    protected $useDerandomizedEncrypt = true;
     // 输入输出的签名方式 16进制的还是base64
     protected $formatSign = 'hex';
     // 可扩展自定义多种返回签名方式
@@ -34,14 +35,23 @@ class RtSm2 {
         '04e27c3780e7069bda7082a23a489d77587ce309583ed99253f66e1d9833ed1a1d0b5ce86dc6714e9974cf258589139d7b1855e8c9fa2f2c1175ee123a95a23e9b'  
     ];
     protected $cipher = null;
-
-    function __construct($formatSign='hex') {
+    /**
+     * Undocumented function
+     *
+     * @param string $formatSign 
+     * @param boolean $randFixed 是否使用中间椭圆，使用中间椭圆的话，速度会快一些，但同样的数据的签名或加密的值就固定了
+     */
+    function __construct($formatSign='hex', $randFixed = true) {
         $this->adapter = RtEccFactory::getAdapter();
         $this->generator = RtEccFactory::getSmCurves()->generatorSm2();
         if(in_array($formatSign,$this->arrFormat)){
             $this->formatSign = $formatSign;
         } else {
             $this->formatSign = 'hex';
+        }
+        if(!$randFixed){
+            $this->useDerandomizedSignatures = false;
+            $this->useDerandomizedEncrypt = false;
         }
     }
 
@@ -90,7 +100,7 @@ class RtSm2 {
      * SM2 公钥加密算法
      *
      * @param string $document
-     * @param string $publicKey
+     * @param string $publicKey 如提供的base64的，可使用 bin2hex(base64_decode($publicKey))
      * @return string
      */
     public function doEncrypt($document, $publicKey)
@@ -125,7 +135,7 @@ class RtSm2 {
      * SM2 私钥解密算法
      *
      * @param string $document
-     * @param string $privateKey
+     * @param string $privateKey  如提供的base64的，可使用 bin2hex(base64_decode($privateKey))
      * @return string
      */
     public function doDecrypt($encryptData,$privateKey)
@@ -154,7 +164,7 @@ class RtSm2 {
         }
     }
     /**
-     * SM2 签名明文16进制密码
+     * SM2 签名明文16进制密码, 如提供的base64的，可使用 bin2hex(base64_decode($privateKey))
      *
      */
     public function doSign( $document, $privateKey, $userId = null ) {
@@ -169,7 +179,7 @@ class RtSm2 {
         return $this->_dosign( $document, $key, $adapter, $generator, $userId, $algorithm );
     }
     /**
-     * SM2 签名pem密码
+     * SM2 签名pem密码 
      *
      */
     public function doSignOutKey( $document, $privateKeyFile, $userId = null ) {
@@ -228,7 +238,15 @@ class RtSm2 {
         //缺省 hex
         return bin2hex($serializedSig);
     }
-
+    /**
+     * Undocumented function
+     *
+     * @param string $document
+     * @param string $sign
+     * @param string $publicKey  如提供的base64的，可使用 bin2hex(base64_decode($publicKey))
+     * @param string|null $userId
+     * @return void
+     */
     public function verifySign( $document, $sign, $publicKey, $userId = null ) {
         $adapter = $this->adapter;
         $generator = $this->generator;
