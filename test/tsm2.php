@@ -13,7 +13,9 @@ define('GK',1);
 define('SIGN',1);
 define('SIGNPEM',1);
 //返回的签名16进制还是base64, 目前可选hex,与base64两种
-$sm2 = new RtSm2('base64');
+// __construct($formatSign='hex', $randFixed = true) 
+$sm2 = new RtSm2('base64',true);
+
 
 if(GK){
     echo "\n----------生成明文密钥对--------------------------\n";
