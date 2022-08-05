@@ -132,16 +132,17 @@ class RtSm2 {
 
     }
     /**
-     * SM2 私钥解密算法
+     * SM2 私钥解密算法, 
      *
      * @param string $document
      * @param string $privateKey  如提供的base64的，可使用 bin2hex(base64_decode($privateKey))
+     * @param bool $trim 是否做04开头的去除，看业务返回
      * @return string
      */
-    public function doDecrypt($encryptData,$privateKey)
+    public function doDecrypt($encryptData,$privateKey,$trim = true)
     {
         // $encryptData = $c1.$c3.$c2
-        if(substr($encryptData,0,2)=='04'){
+        if(substr($encryptData,0,2)=='04' && $trim){
             $encryptData = substr($encryptData,2);
         } 
         $adapter = $this->adapter;
