@@ -111,7 +111,7 @@ class RtSm2 {
         $arrMsg = Hex2ByteBuf::HexStringToByteArray2(bin2hex($document));
 
         list( $pubKeyX, $pubKeyY ) = $this->_getKeyXY( $publicKey );
-        $key = $this->_getPubKeyObject( $pubKeyX, $pubKeyY );
+        // $key = $this->_getPubKeyObject( $pubKeyX, $pubKeyY );
         $point = new Point( $adapter, $generator->getCurve(), gmp_init( $pubKeyX, 16 ), gmp_init( $pubKeyY, 16 ) );
         // 是否使用固定的中间椭圆加密，
         if($this->useDerandomizedEncrypt){
@@ -141,6 +141,9 @@ class RtSm2 {
     public function doDecrypt($encryptData,$privateKey)
     {
         // $encryptData = $c1.$c3.$c2
+        if(substr($encryptData,0,2)=='04'){
+            $encryptData = substr($encryptData,2);
+        } 
         $adapter = $this->adapter;
         $generator = $this->generator;
         $this->cipher = new \Rtgm\smecc\SM2\Cipher();
@@ -203,7 +206,7 @@ class RtSm2 {
     }
 
     protected function _dosign( $document, $key, $adapter,$generator, $userId, $algorithm = 'sha256' ) {
-        $publickey = $key->getPublicKey();
+        // $publickey = $key->getPublicKey();
 
         $obPoint = $key->getPublicKey()->getPoint();
 
