@@ -15,3 +15,10 @@ if ($newSign == $goodSign) {
 } else {
     echo "Bad";
 }
+echo "\n=========\n";
+//good 补0，
+$goodSign2 = "MEMCHx7T5iZF+kfk0mNDxVOX2ZOytWjcFBDCRMyUZsvdk\/8CICOZz0A91TlSbZWAhs8J24nWT35l1Su8zegr+vomI9P+";
+echo (bin2hex(base64_decode($goodSign2)));
+echo "\n";
+$newSign2 = $fs->format_cmbc($goodSign2);
+echo (bin2hex(base64_decode($newSign2)));
