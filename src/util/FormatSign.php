@@ -26,10 +26,10 @@ class FormatSign
      */
     public function format_cmbc($sign){
         list($binR, $binS) = $this->_decode_rs(base64_decode($sign));
-        if(strlen($binR)<32){
+        while(strlen($binR)<32){
             $binR = chr(0).$binR;
         }
-        if(strlen($binS)<32){
+        while(strlen($binS)<32){
             $binS = chr(0).$binS;
         }
         $lenR = strlen($binR);
@@ -39,14 +39,18 @@ class FormatSign
     }
     private function _trim_int_pad($binStr)
     {
-        if (ord($binStr[0]) > 0) {
-            return $binStr;
-        } else {
-            if (ord($binStr[1]) <= 127) {
-                return substr($binStr, 1);
-            }
-            return $binStr;
+        // echo bin2hex($binStr)."\n";
+        //trim 0
+        while(ord($binStr[0])==0){
+            $binStr = substr($binStr,1);
         }
+        // add 0 if necessary
+        if(ord($binStr[0])>127){
+            $binStr =  chr(0).$binStr;
+        }
+        // echo bin2hex($binStr)."\n";
+        return $binStr;
+
     }
     private function _decode_rs($binSign)
     {
