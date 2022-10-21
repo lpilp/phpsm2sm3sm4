@@ -9,14 +9,21 @@
 * PHP >=7.2,打开gmp组件支持
 * 如需要使用php5.6 请使用wzhih童鞋fork修改的 https://github.com/wzhih/guomi ; composer require wzhih/guomi
 ### SM2
-* 签名验签算法主体基于PHPECC算法架构，添加了sm2的椭圆参数， 
+* 签名验签算法主体基于PHPECC算法架构，添加了sm2的椭圆参数，
 * 参考了 https://github.com/ToAnyWhere/phpsm2 童鞋的sm2验签算法，密钥生成算法
 * 添加了签名算法， 支持sm2的16进制，base64公私钥的签名，验签算法
 * 支持从文件中读取pem文件的签名，验签算法
 * 添加了sm2的非对称加密的算法，但速度一般，有待优化，不能保证兼容所有语言进行加解密，目前测试了js， python的相互加解密
 * sm2的加密解密算法在openssl 1.1.1的版本下自带的函数中暂无sm2的公钥私钥的加密函数，得自己实现，建议使用C，C++的算法，打包成PHP扩展的方式
 * 由于 openssl没有实现sm2withsm3算法，用系统函数无法实现签名及证书的自签名分发
-* SM2的非对称加密缺省的是c1c3c2， 请使用的时候注意下，对方返回的是c1c3c2还是c1c2c3，进行相应的修改更新,还有一点就是本项目中c1前面没有04， 视对接方的需求，看是否添加\x04
+* SM2的非对称加密缺省的是c1c3c2， 请使用的时候注意下，对方返回的是c1c3c2还是c1c2c3，进行相应的修改更新,还有一点就是本项目中c1前面没有04， 视对接方的需求，看是否添加\x04, 16进制下 从c1c2c3转c1c3c2如下
+```php
+$c1 = substr($data,0,130); //前面有04，没04的话，这里是128， 相应的后面两行的130 改成128
+$c3 = substr($data,-64);
+$c2 = substr($data,130,strlen($data)-130-64);
+
+$data = $c1.$c3.$c2;
+```
 
 ### SM3
 * 该算法直接使用 https://github.com/ToAnyWhere/phpsm2 中sm2签名用到的匹配sm3， 未做修改
