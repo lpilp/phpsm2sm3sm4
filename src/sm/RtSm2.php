@@ -161,6 +161,7 @@ class RtSm2 {
         $document = hex2bin(Hex2ByteBuf::ByteArrayToHexString($arrMsg));
 
         $c3_ = strtolower(Hex2ByteBuf::ByteArrayToHexString($this->cipher->Dofinal()));
+        $c3 = strtolower($c3);
         if($c3 == $c3_){ //hash签名相同，
             return $document;
         } else {
