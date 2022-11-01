@@ -1,6 +1,7 @@
 <?php
 namespace Rtgm\sm;
-
+define("C1C3C2",1);
+define("C1C2C3",0);
 use Rtgm\ecc\RtEccFactory;
 use Rtgm\ecc\Sm2Signer;
 use Mdanter\Ecc\Crypto\Key\PrivateKey;
@@ -103,7 +104,7 @@ class RtSm2 {
      * @param string $publicKey 如提供的base64的，可使用 bin2hex(base64_decode($publicKey))
      * @return string
      */
-    public function doEncrypt($document, $publicKey)
+    public function doEncrypt($document, $publicKey, $model = C1C3C2)
     {
         $adapter = $this->adapter;
         $generator = $this->generator;
@@ -127,8 +128,12 @@ class RtSm2 {
         // print_R($c2);echo "\n";
         $c3 = strtolower(Hex2ByteBuf::ByteArrayToHexString($this->cipher->Dofinal()));
         // print_r($c1.$c3.$c2);
-
-        return $c1.$c3.$c2;
+        if($model == C1C3C2){
+            return $c1.$c3.$c2;
+        } else {
+            return $c1.$c3.$c2;
+        }
+        
 
     }
     /**
@@ -139,20 +144,29 @@ class RtSm2 {
      * @param bool $trim 是否做04开头的去除，看业务返回
      * @return string
      */
-    public function doDecrypt($encryptData,$privateKey,$trim = true)
+    public function doDecrypt($encryptData,$privateKey,$trim = true,$model = C1C3C2)
     {
         // $encryptData = $c1.$c3.$c2
         if(substr($encryptData,0,2)=='04' && $trim){
             $encryptData = substr($encryptData,2);
-        } 
+        }
+        if(strlen($privateKey)==66 && substr($privateKey,0,2)=='00') {
+            $privateKey = substr($privateKey,2); // 个别的key 前面带着00
+        }
         $adapter = $this->adapter;
         $generator = $this->generator;
         $this->cipher = new \Rtgm\smecc\SM2\Cipher();
         $c1X = substr($encryptData,0,64);
         $c1Y = substr($encryptData,strlen($c1X),64);
         $c1Length = strlen($c1X) + strlen($c1Y);
-        $c3 = substr($encryptData,$c1Length,64);
-        $c2 = substr($encryptData,$c1Length+strlen($c3));
+        if($model == C1C3C2){
+            $c3 = substr($encryptData,$c1Length,64);
+            $c2 = substr($encryptData,$c1Length+strlen($c3));
+        } else {
+            $c3 = substr($encryptData,-64);
+            $c2 = substr($encryptData,$c1Length,strlen($encryptData)-$c1Length-64);
+        }
+        
         $p1 = new Point( $adapter, $generator->getCurve(), gmp_init($c1X, 16 ), gmp_init( $c1Y, 16 ) );
         $this->cipher->initDecipher($p1,$privateKey);
 
