@@ -131,7 +131,7 @@ class RtSm2 {
         if($model == C1C3C2){
             return $c1.$c3.$c2;
         } else {
-            return $c1.$c3.$c2;
+            return $c1.$c2.$c3;
         }
         
 
