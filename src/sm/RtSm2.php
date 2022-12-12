@@ -147,6 +147,9 @@ class RtSm2 {
     public function doDecrypt($encryptData,$privateKey,$trim = true,$model = C1C3C2)
     {
         // $encryptData = $c1.$c3.$c2
+        if($this->formatSign=='base64'){
+            $encryptData = bin2hex(base64_decode($encryptData));
+        }
         if(substr($encryptData,0,2)=='04' && $trim){
             $encryptData = substr($encryptData,2);
         }

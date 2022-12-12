@@ -9,6 +9,7 @@ $privatefile = "./data/sm2.pem";
 $userId = '1234567812345678';
 $document = "我爱你ILOVEYOU!";
 
+var_dump(bin2hex($document));
 define('GK',1);
 define('SIGN',1);
 define('SIGNPEM',1);
