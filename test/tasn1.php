@@ -3,7 +3,9 @@ require_once '../vendor/autoload.php';
 use Rtgm\util\MyAsn1;
 
 
-print_r(MyAsn1::decode_file('./data/rsa.pem'));
+print_r(MyAsn1::decode_file('./data/sm2.pem'));
 
-$data = 'MHcCAQEEIC3X4bpf0xxL1EKlmbFN07/dPgIlC5S0jFinMA3GEmAdoAoGCCqBHM9VAYItoUQDQgAEm7RF3E+Fv9BY9AEgKUzWzxx0yuZYfJn6EZ4HIZrbPnt/yOYLsJSax2CuWtREbNS31tDRPOGPqHh3DO1FyQwIYw==';
-// print_r(MyAsn1::decode($data ,'base64')); 
+$data = 'MHcCAQEEIDMLq58c/Ox37b0NA4Ok65BcRRG+OmF1O+LtAIwRvmm8oAoGCCqBHM9V
+AYItoUQDQgAEyqo4GGHqDU6XIBpDCzEfi7Z2EpUzmU/s46pJioQkd7tNYAb3Em2J
+JJRFMK4l6WPlGze3zC66NaRZuyBagjDiVQ==';
+print_r(MyAsn1::decode($data ,'base64')); 
