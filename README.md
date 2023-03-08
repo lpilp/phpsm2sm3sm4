@@ -19,7 +19,33 @@
 * 添加了sm2的非对称加密的算法，但速度一般，有待优化，不能保证兼容所有语言进行加解密，目前测试了js， python的相互加解密
 * sm2的加密解密算法在openssl 1.1.1的版本下自带的函数中暂无sm2的公钥私钥的加密函数，得自己实现，建议使用C，C++的算法，打包成PHP扩展的方式
 * SM2的非对称加密缺省的是c1c3c2， 请使用的时候注意下，对方返回的是c1c3c2还是c1c2c3，进行相应的修改更新,还有一点就是本项目中c1前面没有04， 视对接方的需求，看是否添加\x04, v1.0.6版已对c1c3c2还是c1c2c3做了兼容，缺省是c1c3c2,添加相应的modetype后可以兼容两种模式，使用方法见  test/tsm2_encrypt.php
+* 如对方sm2非对称加密生成的不是c1c3c2 而是 asn1(c1x,c1y,c3,c2), 目前本项目不支持这种样式的，请先asn1解开后，拼接成 C1C3C2的形式后再调用解密函数，否则会报椭圆不匹配错误,以下是简单拼装方法，如你的项目有自带的，请使用自己的函数
+```
+use FG\ASN1\ASNObject;
+// $asnObject 为解析出来的原始数据，asn1一般是base64的，只需 $binaryData = base64_decode($data);
+$asnObject = ASNObject::fromBinary($binaryData);
+$result = array();
+foreach($asnObject as $object){
+    $result[] = $object->__toString();
+}
+$c1x = gmp_strval(gmp_init($result[0],10),16);
+$c1y = gmp_strval(gmp_init($result[1],10),16);
+// 个人认为asn1的是比较好的，不会有补0的问题，但官方给的是c1c3c2，解析开只能按长度解开，实际计算中会有小概率位数不够
+$c1x = padding_zero($c1x);
+$c1y = padding_zero($c1y);
 
+$c3 = $result[2];
+$c2 = $result[3];
+$ret = strtolower("{$c1x}{$c1y}{$c3}{$c2}");
+
+function padding_zero($hex,$len = 64) {
+    $left = $len - strlen($hex) ;
+    if($left >0){
+        $hex = str_repeat('0',$left) . $hex;
+    }
+    return $hex;
+}
+```
 ### SM3
 * 该算法直接使用 https://github.com/ToAnyWhere/phpsm2 中sm2签名用到的匹配sm3， 未做修改
 * 也可使用 openssl的函数， 详见openssl_tsm3.php
