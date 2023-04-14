@@ -1,8 +1,8 @@
 # php sm2 sm3 sm4 国密算法整理
-* 本项目支持php版本的国密sm2的签名算法，非对称加解密算法（非对称加密刚上线，目前测试无问题，不能保证兼容其他语言，有问题可以提issues），sm3的hash，  sm4的对称加解密，要求PHP７，打开gmp支持
+* 本项目支持php版本的国密sm2的签名算法，非对称加解密算法，sm3的hash，  sm4的对称加解密，要求PHP７，打开gmp支持
 * 目前如果服务器配套的使用的是openssl 1.1.1x， 目前到1.1.1.l(t) ，sm3，sm4都可以直接用openssl_xxx系列函数直接实现，不必大量的代码，不支持sm2的签名，sm2的加解密
 
-### 使用(how to use)
+### 使用
 * composer require lpilp/guomi
 * please make sure you upgrade to Composer 2+
 * PHP >=7.2,打开gmp组件支持
@@ -27,14 +27,14 @@
 ### SM4
 * 该算法直接封装使用 https://github.com/lizhichao/sm  的sm4算法， 同时该项目支持 sm3,sm4 ，可以composer安装
 * 由于sm4-ecb， sm4-cbc加密需要补齐，项目lizhichao/sm项目未做补齐操作，这里封装的时候，针对这两个算法做了补齐操作， 其他如sm4-ctr,sm4-cfb，sm4-ofb等，可以直接用
-* 在openssl 1.1.1下可使用系统的函数，已支持sm4-cbc，sm4-cfb，sm4-ctr,sm4-ecb，sm4-ofb，  详见openssl_tsm4.php
+* 在openssl 1.1.1下可使用系统的函数，已支持sm4-cbc，sm4-cfb，sm4-ctr,sm4-ecb，sm4-ofb，  详见openssl_tsm4.php ，有一点很诡异，用yum/dnf安装的openssl只支持sm3， 如果是自己编译安装的就支持sm3，sm4
 
 ### SM2各语言总结
 * 这里封装的测试函数已与相关的js,python,java,go等都可以互签互认
 * js: https://github.com/JuneAndGreen/sm-crypto 一个注意点就是： js的中文字符转成byte[]时，缺省的是unicode编码两字节，需要转成utf8的三字节编码，一个简单的方案 unescape(encodeURIComponent(str)) 然后再一个字节一个字节读就行了
-* python: https://github.com/duanhongyi/gmssl  使用 pip install gmssl 安装就可， 注意的就是在python2下 ， string与byte[] 是可以隐式转换的，在python3下需要显式地将string转成byte[]
+* python: https://github.com/duanhongyi/gmssl  使用 pip install gmssl 安装就可
 * java: https://github.com/ZZMarquis/gmhelper 注意下java中文的转码问题，getBytes("UTF-8")， 要加上编码类型， 因为 getBytes()函数的缺省编码是随操作系统的，如果是在中文版的windows中使用，缺省是GBK编码，就会出现中文的编码的问题，而造成签名无法通过
-* openssl: 升到1.1.1以后，支持sm3，sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名，得使用原生代码实现，签名中需要实现sm2withsm3， openssl1.1.1只实现了sm2whithsha256;还有一点很诡异，用yum/dnf安装的openssl只支持sm3， 如果是自己编译安装的就支持sm3，sm4
+* openssl: 升到1.1.1以后，支持sm3，sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名
 + go: https://github.com/tjfoc/gmsm 一家做区块链的公司开源的项目，在go方面可以说是最早开源的了，
 + C#: 项目也比较少，基本是基于https://www.bouncycastle.org/ 的BC加密库(java也是基于该库)，该库1.8.4后版本支持sm2，sm3，sm4，考察搜索到的几个项目，https://github.com/hz281529512/SecretTest 完整性算比较好
 ### SM2签名常见问题
