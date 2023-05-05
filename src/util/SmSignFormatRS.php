@@ -1,4 +1,6 @@
 <?php
+namespace Rtgm\util;
+
 class SmSignFormatRS
 {
     public static function asn1_to_rs($str, $format = 'base64')
@@ -8,10 +10,16 @@ class SmSignFormatRS
         } else if ($format == 'hex') {
             $str =  hex2bin($str);
         }
-        $arr = MyAsn1::decode($str);
-        $r = self::_padding_zero($arr[0]);
-        $s = self::_padding_zero($arr[1]);
+        $arr = \FG\ASN1\ASNObject::fromBinary($str);
+        // var_dump($arr[0]->getContent());die();
+        $r = self::_padding_zero(self::_format_bigint($arr[0]->getContent()));
+        $s = self::_padding_zero(self::_format_bigint($arr[1]->getContent()));
         return base64_encode($r . $s);
+    }
+    protected static function _format_bigint($data)
+    {
+        $hex = gmp_strval(gmp_init($data, 10), 16);
+        return $hex;
     }
     /**
      * rs要固定长度，经测试会有1%的概率出现长度短的，要补0
