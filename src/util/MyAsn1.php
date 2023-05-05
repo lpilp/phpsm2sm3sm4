@@ -140,7 +140,7 @@ class MyAsn1
      * @param bigint|string $data
      * @return string
      */
-    protected function format_bigint($data)
+    protected static function format_bigint($data)
     {
         $hex = gmp_strval(gmp_init($data, 10), 16);
         return self::padding_one_zero($hex);
