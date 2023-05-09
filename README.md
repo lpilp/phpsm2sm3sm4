@@ -37,9 +37,11 @@
 * openssl: 升到1.1.1以后，支持sm3，sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名
 + go: https://github.com/tjfoc/gmsm 一家做区块链的公司开源的项目，在go方面可以说是最早开源的了，
 + C#: 项目也比较少，基本是基于https://www.bouncycastle.org/ 的BC加密库(java也是基于该库)，该库1.8.4后版本支持sm2，sm3，sm4，考察搜索到的几个项目，https://github.com/hz281529512/SecretTest 完整性算比较好
++ C: https://github.com/guanzhi/GmSSL 北大计算机的开源项目，前身是北大的一个实验室申请的国家项目，干了几年可能结项了，开源了，后来可能当时干的研究生毕业了，停了2，3年， 项目没人管， 2022年又开始更新了，可能大概招了新的研究生，又开始搞。 由于编译器或是系统版本问题，在随机N个字符的函数那会编译报错，自行按错误提示处理就行。
++ php-openssl:  php7 好像支持了sm3, 在openssl1.1.1以上，可用编译的方式加入sm3,sm4的支持。 xampp套件下的php7以上的版本支持sm3, sm4的openssl_系列函数， openssl_get_md_methods() 查看是否支持sm3, openssl_get_cipher_methods() 查看是否支持sm4
 ### SM2签名常见问题
   * 提供的私钥是base64的短串，一般直接 bin2hex(base64_decode(str)) 就是明文的密钥了
   * 文件格式的密钥一般有pkcs1与pkcs8两个格式，本项目只支持pkcs1格式的密钥，使用前请先进行相关的转换，一般 pkcs8是四行，pkcs1是三行，区别见 https://www.jianshu.com/p/a428e183e72e
   * 关于签名的字符串的问题，有些项目会将原始字符串哈稀后，再对哈稀值进行签名，有些对这哈稀值又进行了hex2bin操作后再签名，请双方按约定的标准确定最后签名的数据值，双方保持一致即可
-  * 签名的结果是asn1(r,s)，有极个别的项目签名出来的只是 r+s的字符串组合，验证签名的时候注意下。 base64的签名如果是96字节左右且是以 MEU开头的，这个是asn1的，如果只有88字节的，那就是r + s 的, 现在招行新的对外项目又采用了这种r+s 的了，老的是 asn1方式的，但对int数据的asn1编码有前面补0与否不按标准来，全都补0的bug
-  
+  * 签名的结果是asn1(r,s)，个别的项目签名出来的只是 r+s的字符串组合，验证签名的时候注意下。 base64的签名如果是96字节左右且是以 MEU开头的，这个是asn1的，如果只有88字节的，那就是r + s 的  在src/util/SmSignFormatRS.php 有相关的转换函数，请按需使用
+
