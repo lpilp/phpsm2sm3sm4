@@ -43,6 +43,7 @@ class RtSm2 {
      * @param boolean $randFixed 是否使用中间椭圆，使用中间椭圆的话，速度会快一些，但同样的数据的签名或加密的值就固定了
      */
     function __construct($formatSign='hex', $randFixed = true) {
+        // 注意： 这个randFixed尽量取false, 如需要固定，请重新生成$foreignkey密码对
         $this->adapter = RtEccFactory::getAdapter();
         $this->generator = RtEccFactory::getSmCurves()->generatorSm2();
         if(in_array($formatSign,$this->arrFormat)){
