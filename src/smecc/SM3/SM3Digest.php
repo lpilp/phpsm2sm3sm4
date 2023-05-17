@@ -2,8 +2,10 @@
 //declare(strict_types=1);
 namespace Rtgm\smecc\SM3;
 
+use AllowDynamicProperties;
 use Rtgm\smecc\SM3\GeneralDigest;
 
+#[AllowDynamicProperties]
 class SM3Digest extends  GeneralDigest
 {
     public static $AlgorithmName="SM3";
