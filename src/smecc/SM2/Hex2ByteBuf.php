@@ -27,7 +27,7 @@ class Hex2ByteBuf
 
     private static function myhex($indata)
     {
-        $temp_1 = $indata / 16;
+        $temp_1 = intval($indata / 16);
         if ($temp_1 < 10)
             $temp_1 = $temp_1 + 0x30;
         else
