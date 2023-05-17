@@ -24,7 +24,7 @@ class SM3Digest extends  GeneralDigest
     private static $X0 = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     
     private $X = array();
-    private $XOff;
+    private $xOff;
     
     private $T_00_15 = 0x79cc4519;
     private $T_16_63 = 0x7a879d8a;
