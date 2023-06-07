@@ -67,7 +67,11 @@ class SimpleSm2
         $publicKey = '04' . $x1 . $y1;
         return $publicKey;
     }
-
+    // 生成标准的 base64 的 asn1(r,s)签名
+    public function sign($document, $prikey, $publicKey = null, $userId = null){
+        list($r,$s) = $this->sign_raw($document, $prikey, $publicKey, $userId);
+        return Sm2Asn1::rs_2_asn1($r,$s);
+    }
     /**
      * 
      *
@@ -118,7 +122,12 @@ class SimpleSm2
             return array(gmp_strval($r, 16), gmp_strval($s, 16));
         }
     }
+    // 标准的asn1 base64签名验签
+    public function verify($document, $publicKey, $sign, $userId = null){
+        list($hexR,$hexS) = Sm2Asn1::asn1_2_rs($sign);
+        return $this->verifty_sign_raw($document, $publicKey, $hexR, $hexS, $userId);
 
+    }
     /**
      * Undocumented function
      *
@@ -224,7 +233,7 @@ class SimpleSm2
      * @param string  $c2 hex
      * @return string  decode($c2) 解密结果
      */
-    public function decrypt($prikey, $c1,$c3,$c2)
+    public function decrypt_raw($prikey, $c1,$c3,$c2)
     {
         list($x1, $y1) = $this->_get_pub_xy($c1);
         $point = new Sm2Point($x1,$y1);
