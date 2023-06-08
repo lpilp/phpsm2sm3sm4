@@ -265,15 +265,8 @@ class RtSm2
         //缺省 hex
         return bin2hex($serializedSig);
     }
-    /**
-     * Undocumented function
-     *
-     * @param string $document
-     * @param string $sign
-     * @param string $publicKey  如提供的base64的，可使用 bin2hex(base64_decode($publicKey))
-     * @param string|null $userId
-     * @return void
-     */
+
+    
     public function verifySign($document, $sign, $publicKey, $userId = null)
     {
         $adapter = $this->adapter;
