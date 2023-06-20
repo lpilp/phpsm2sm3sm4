@@ -62,4 +62,5 @@ function __construct($formatSign='hex', $randFixed = true) {
     }
 }
 ```
+有什么问题，可以添加VX xiaopz129
 
