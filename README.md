@@ -45,7 +45,7 @@
   * 关于签名的字符串的问题，有些项目会将原始字符串哈稀后，再对哈稀值进行签名，有些对这哈稀值又进行了hex2bin操作后再签名，请双方按约定的标准确定最后签名的数据值，双方保持一致即可
   * 签名的结果是asn1(r,s)，个别的项目签名出来的只是 r+s的字符串组合，验证签名的时候注意下。 base64的签名如果以MEU开头的，这个是asn1的，解开后是64字节是r + s 的  在src/util/SmSignFormatRS.php 有相关的转换函数，请按需使用
 ### 特别注意
-  * sm2的构造函数中缺省是固定了中间椭圆，目前发现个别的接入方将这个中间椭圆给加黑了， 请使用的时候 $randFixed 设为false 或是 重新生成一个中间椭圆的密钥对替换原有程序的数据
+  * sm2的构造函数中缺省是固定了中间椭圆，目前发现个别的接入方将这个中间椭圆算法给加黑了， 请使用的时候 $randFixed 设为false 或是 重新生成一个中间椭圆的密钥对替换原有程序的数据
 ```
 function __construct($formatSign='hex', $randFixed = true) {
     // 注意： 这个randFixed尽量取false, 如需要固定，请重新生成$foreignkey密码对
@@ -62,5 +62,5 @@ function __construct($formatSign='hex', $randFixed = true) {
     }
 }
 ```
-有什么问题，可以添加VX xiaopz129
+
 
