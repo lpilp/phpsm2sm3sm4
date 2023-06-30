@@ -18,7 +18,7 @@
 * 添加了sm2的非对称加密的算法，但速度一般，有待优化，不能保证兼容所有语言进行加解密，目前测试了js， python的相互加解密
 * sm2的加密解密算法在openssl 1.1.1的版本下自带的函数中暂无sm2的公钥私钥的加密函数，得自己实现，建议使用C，C++的算法，打包成PHP扩展的方式
 * SM2的非对称加密缺省的是c1c3c2， 请使用的时候注意下，对方返回的是c1c3c2还是c1c2c3，进行相应的修改更新,还有一点就是本项目中c1前面没有04， 视对接方的需求，看是否添加\x04, v1.0.6版已对c1c3c2还是c1c2c3做了兼容，缺省是c1c3c2,添加相应的modetype后可以兼容两种模式，使用方法见  test/tsm2_encrypt.php
-* 如对方sm2非对称加密生成的不是c1c3c2 而是 asn1(c1x,c1y,c3,c2), 目前本项目不支持这种样式的，请先asn1解开后，拼接成 C1C3C2的形式后再调用解密函数，否则会报椭圆不匹配错误,以下是简单拼装方法，如你的项目有自带的，请使用自己的函数
+* 如对方sm2非对称加密生成的不是c1c3c2 而是 asn1(c1x,c1y,c3,c2), 目前本项目不支持这种样式的，请先asn1解开后，拼接成 C1C3C2的形式后再调用解密函数，否则会报椭圆不匹配错误, 请自行处理
 
 ### SM3
 * 该算法直接使用 https://github.com/ToAnyWhere/phpsm2 中sm2签名用到的匹配sm3， 未做修改
@@ -37,7 +37,7 @@
 * openssl: 升到1.1.1以后，支持sm3，sm4的加解密，还不支持sm2的公私钥加解密，也不支持sm2的签名
 + go: https://github.com/tjfoc/gmsm 一家做区块链的公司开源的项目，在go方面可以说是最早开源的了，
 + C#: 项目也比较少，基本是基于https://www.bouncycastle.org/ 的BC加密库(java也是基于该库)，该库1.8.4后版本支持sm2，sm3，sm4，考察搜索到的几个项目，https://github.com/hz281529512/SecretTest 完整性算比较好
-+ C: https://github.com/guanzhi/GmSSL 北大计算机的开源项目，前身是北大的一个实验室申请的国家项目，干了几年可能结项了，开源了，后来可能当时干的研究生毕业了，停了2，3年， 项目没人管， 2022年又开始更新了，可能大概招了新的研究生，又开始搞。 由于编译器或是系统版本问题，在随机N个字符的函数那会编译报错，自行按错误提示处理就行。
++ C: https://github.com/guanzhi/GmSSL 北大计算机的开源项目，fork多,star也多。
 + php-openssl:  php7 好像支持了sm3, 在openssl1.1.1以上，可用编译的方式加入sm3,sm4的支持。 xampp套件下的php7以上的版本支持sm3, sm4的openssl_系列函数， openssl_get_md_methods() 查看是否支持sm3, openssl_get_cipher_methods() 查看是否支持sm4
 ### SM2签名常见问题
   * 提供的私钥是base64的短串，一般直接 bin2hex(base64_decode(str)) 就是明文的密钥了
