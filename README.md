@@ -23,7 +23,7 @@
 ### SM3
 * 该算法直接使用 https://github.com/ToAnyWhere/phpsm2 中sm2签名用到的匹配sm3， 未做修改
 * 也可使用 openssl的函数， 详见openssl_tsm3.php
-
+* hmac-sm3,这个算法与hmac-sha256在hmac的算法是一样的，只是hash的算法不一样，一个是sm3,一个sha256, 没有什么特殊的注意的地方 
 ### SM4
 * 该算法直接封装使用 https://github.com/lizhichao/sm  的sm4算法， 同时该项目支持 sm3,sm4 ，可以composer安装
 * 由于sm4-ecb， sm4-cbc加密需要补齐，项目lizhichao/sm项目未做补齐操作，这里封装的时候，针对这两个算法做了补齐操作， 其他如sm4-ctr,sm4-cfb，sm4-ofb等，可以直接用
