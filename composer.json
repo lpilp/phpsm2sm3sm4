@@ -6,7 +6,8 @@
     "authors": [
         {
             "name": "recent",
-            "email": "lpilp@126.com"
+            "email": "lpilp@126.com",
+            "wx": "xiaopz129"
         }
     ],
     "minimum-stability": "stable",
