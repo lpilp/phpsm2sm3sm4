@@ -13,7 +13,7 @@ class SimpleSm2
     protected $gx;
     protected $gy;
     protected $size;
-    protected $userId = '123456781234567';
+    protected $userId = '1234567812345678';
     //请自行重新生成一对，示例中的foreignKey可能被大量项目使用，而被对方加黑
     protected $foreignKey = array(
         '21fbd478026e2d668e3570e514de0d312e443d1e294c1ca785dfbfb5f74de225',
