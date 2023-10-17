@@ -6,7 +6,7 @@
 * composer require lpilp/guomi
 * please make sure you upgrade to Composer 2+
 * PHP >=7.2,打开gmp组件支持
-* 如需要使用php5.6 请使用wzhih童鞋fork修改的 https://github.com/wzhih/guomi ; composer require wzhih/guomi
+* 如需要使用php5.6 请使用wzhih童鞋fork修改的 https://github.com/wzhih/guomi ; composer require wzhih/guomi 或是使用该项目的简化版本 https://github.com/lpilp/simplesm2
 ### SM2
 * 签名验签算法主体基于PHPECC算法架构，添加了sm2的椭圆参数，
 * 参考了 https://github.com/ToAnyWhere/phpsm2 童鞋的sm2验签算法，密钥生成算法
