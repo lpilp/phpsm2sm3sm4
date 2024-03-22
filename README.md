@@ -1,7 +1,7 @@
 # php sm2 sm3 sm4 国密算法整理
 * 本项目支持php版本的国密sm2的签名算法，非对称加解密算法，sm3的hash，  sm4的对称加解密，要求PHP７，打开gmp支持
 * 目前如果服务器配套的使用的是openssl 1.1.1x， 目前到1.1.1.l(w) ，sm3，sm4都可以直接用openssl_xxx系列函数直接实现，不必大量的代码，不支持sm2的签名，sm2的加解密
-
+* 该版本是基于PHP-ECC,也支持其他的椭圆算法的，依赖比较多，如果只想要简单的 sm2相关的签名，加密，可以使用本版本的简化版 https://github.com/lpilp/simplesm2
 ### 使用
 * composer require lpilp/guomi
 * please make sure you upgrade to Composer 2+
