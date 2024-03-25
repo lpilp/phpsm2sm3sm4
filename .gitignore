@@ -1,3 +1,4 @@
 vendor2/
 vendor/
 composer.lock
+.vscode
