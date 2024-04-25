@@ -8,7 +8,9 @@
 ```
 composer require lpilp/guomi
 ```
-> 请确保你升级到 `composer 2` 及以上版本。`PHP >=7.2`,打开gmp组件支持。如需要使用php5.6 请使用wzhih童鞋fork修改的 https://github.com/wzhih/guomi ;
+> 请确保你升级到 `composer 2` 及以上版本。`PHP >=7.2`,打开gmp组件支持。
+
+如需要使用php5.6 请使用wzhih童鞋fork修改的 https://github.com/wzhih/guomi ;
 ```
 composer require wzhih/guomi
 ```
