@@ -2,11 +2,20 @@
 * 本项目支持php版本的国密sm2的签名算法，非对称加解密算法，sm3的hash，  sm4的对称加解密，要求PHP７，打开gmp支持
 * 目前如果服务器配套的使用的是openssl 1.1.1x， 目前到1.1.1.l(w) ，sm3，sm4都可以直接用openssl_xxx系列函数直接实现，不必大量的代码，不支持sm2的签名，sm2的加解密
 * 该版本是基于PHP-ECC,也支持其他的椭圆算法的，依赖比较多，如果只想要简单的 sm2相关的签名，加密，可以使用本版本的简化版 https://github.com/lpilp/simplesm2
-### 使用
-* composer require lpilp/guomi
-* please make sure you upgrade to Composer 2+
-* PHP >=7.2,打开gmp组件支持
-* 如需要使用php5.6 请使用wzhih童鞋fork修改的 https://github.com/wzhih/guomi ; composer require wzhih/guomi 或是使用该项目的简化版本 https://github.com/lpilp/simplesm2
+* 
+# 安装
+
+```
+composer require lpilp/guomi
+```
+> 请确保你升级到 `composer 2` 及以上版本。`PHP >=7.2`,打开gmp组件支持。如需要使用php5.6 请使用wzhih童鞋fork修改的 https://github.com/wzhih/guomi ;
+```
+composer require wzhih/guomi
+```
+> 或是使用该项目的简化版本 https://github.com/lpilp/simplesm2
+
+# 使用
+
 ### SM2
 * 签名验签算法主体基于PHPECC算法架构，添加了sm2的椭圆参数，
 * 参考了 https://github.com/ToAnyWhere/phpsm2 童鞋的sm2验签算法，密钥生成算法
@@ -49,7 +58,8 @@
   * 文件格式的密钥一般有pkcs1与pkcs8两个格式，本项目只支持pkcs1格式的密钥，使用前请先进行相关的转换，一般 pkcs8是四行，pkcs1是三行，区别见 https://www.jianshu.com/p/a428e183e72e
   * 关于签名的字符串的问题，有些项目会将原始字符串哈稀后，再对哈稀值进行签名，有些对这哈稀值又进行了hex2bin操作后再签名，请双方按约定的标准确定最后签名的数据值，双方保持一致即可
   * 签名的结果是asn1(r,s)，个别的项目签名出来的只是 r+s的字符串组合，验证签名的时候注意下。 base64的签名如果以MEU开头的，这个是asn1的，解开后是64字节是r + s 的  在src/util/SmSignFormatRS.php 有相关的转换函数，请按需使用
-### 特别注意
+
+## 特别注意
   * sm2的构造函数中缺省是固定了中间椭圆，目前发现个别的接入方（目前发现是招行金融平台）将这个中间椭圆私钥随机算法给加黑了， 请使用的时候 $randFixed 设为false 以及重新生成一个中间椭圆的密钥对替换原有程序的数据
 ```
 function __construct($formatSign='hex', $randFixed = true) {
