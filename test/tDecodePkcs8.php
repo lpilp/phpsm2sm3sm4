@@ -46,7 +46,7 @@ echo "私钥： ".$array2[0][1]."\n";
 
 $array3 = Sm2Asn1::decode(hex2bin($array2[0][3]));
 // print_r($array3);
-echo "私钥： ".$array3[0][1]."\n";
+echo "公钥： ".$array3[0][1]."\n";
 
 
 
