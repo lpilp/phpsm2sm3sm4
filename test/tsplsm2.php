@@ -17,7 +17,7 @@ $ssm2->set_fix_foreignkey_flag(true);
 list($c1,$c3,$c2) = $ssm2->encrypt_raw($publicKey, $document);
 
 var_dump($c1,$c3,$c2);
-$val = $ssm2->decrypt($privateKey, $c1,$c3,$c2);
+$val = $ssm2->decrypt_raw($privateKey, $c1,$c3,$c2);
 var_dump($val);
 // list($r, $s) = $ssm2->sign_raw($document, $privateKey, $publicKey,$userId);
 
