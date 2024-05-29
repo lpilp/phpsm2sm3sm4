@@ -6,14 +6,13 @@
     "authors": [
         {
             "name": "recent",
-            "email": "lpilp@126.com",
-            "wx": "xiaopz129"
+            "email": "lpilp@126.com"
         }
     ],
     "minimum-stability": "stable",
     "require": {
         "php": ">=7.2",
-        "mdanter/ecc": "^1.0"
+        "paragonie/ecc": "^2.0"
     },
     "autoload": {
         "psr-4": {
