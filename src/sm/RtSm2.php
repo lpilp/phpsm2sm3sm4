@@ -187,6 +187,56 @@ class RtSm2
             return '';
         }
     }
+
+    /**
+     * 解密ASN1(c1xc1yc3c2)格式的密文
+     * @param $encryptData
+     * @param $privateKey
+     * @param $trim
+     * @param $model
+     * @return string
+     * @throws \Exception
+     */
+    public function doDecryptASN1($encryptData, $privateKey, $trim = true, $model = C1C3C2): string
+    {
+        $newEncryptData = $this->transformANS1($encryptData);
+        return $this->doDecrypt($newEncryptData, $privateKey, $trim, $model);
+    }
+
+    /**
+     * 密文格式转换 ANS1(c1xc1yc3c2) -> c1c3c2
+     *
+     * @param string $encryptData
+     * @return string
+     * @throws \Exception
+     */
+    private function transformANS1(string $encryptData): string
+    {
+        $asn1Object = \FG\ASN1\ASNObject::fromBinary($encryptData);
+
+        if (! $asn1Object instanceof \FG\ASN1\Universal\Sequence) {
+            throw new \Exception('Invalid ASN.1 format');
+        }
+
+        // 提取 x 和 y 坐标
+        $c1X = $asn1Object->getChildren()[0]->getContent();
+        $c1Y = $asn1Object->getChildren()[1]->getContent();
+
+        // 使用 GMP 处理大整数
+        $c1xHex = gmp_strval(gmp_init($c1X, 10), 16);
+        $c1yHex = gmp_strval(gmp_init($c1Y, 10), 16);
+
+        // 确保十六进制字符串长度为 64 个字符（256 位）
+        $c1xHex = str_pad($c1xHex, 64, '0', STR_PAD_LEFT);
+        $c1yHex = str_pad($c1yHex, 64, '0', STR_PAD_LEFT);
+
+        // 提取 c3 和 c2
+        $c3 = $asn1Object->getChildren()[2]->getContent();
+        $c2 = $asn1Object->getChildren()[3]->getContent();
+
+        return $c1xHex . $c1yHex . $c3 . $c2;
+    }
+
     /**
      * SM2 签名明文16进制密码, 如提供的base64的，可使用 bin2hex(base64_decode($privateKey))
      *
