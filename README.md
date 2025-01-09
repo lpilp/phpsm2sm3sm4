@@ -24,6 +24,7 @@ composer require wzhih/guomi
 * 添加了签名算法， 支持sm2的16进制，base64公私钥的签名，验签算法
 * 支持从文件中读取pem文件的签名，验签算法
 * 由于 openssl没有实现sm2withsm3算法，用系统函数无法实现签名及证书的自签名分发
+* openssl1.1.1后倒是支持sm2withsha256的签名方法 ^_^
 
 ### SM2签名常见问题
   * 提供的私钥是base64的短串，一般直接 bin2hex(base64_decode(str)) 就是明文的密钥了
