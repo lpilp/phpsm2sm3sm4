@@ -30,6 +30,13 @@ composer require wzhih/guomi
   * 文件格式的密钥一般有pkcs1与pkcs8两个格式，本项目只支持pkcs1格式的密钥，使用前请先进行相关的转换，一般 pkcs8是四行，pkcs1是三行，区别见 https://www.jianshu.com/p/a428e183e72e
   * 关于签名的字符串的问题，有些项目会将原始字符串哈稀后，再对哈稀值进行签名，有些对这哈稀值又进行了hex2bin操作后再签名，请双方按约定的标准确定最后签名的数据值，双方保持一致即可
   * 签名的结果是asn1(r,s)，个别的项目签名出来的只是 r+s的字符串组合，验证签名的时候注意下。 base64的签名如果以MEU开头的(hex的话是30开头)，这个是asn1的，如解开后是固定64字节（hex是 128的）是r + s 的  在src/util/SmSignFormatRS.php 有相关的转换函数，请按需使用
+  * 如何将文件密码中解出公私钥明文，openssl1.1.1(.)后支持sm2的解析了，首先看下版本是否支持 openssl ecparam  -list_curves   看下是否有sm2, 如果有的话，就好解决了
+    ```
+    # 公钥文件查看明文
+    openssl ec -pubin -in sm2pub.pem -text -noout
+    #私钥文件查看明文
+    openssl ec -in sm2.pem -text -noout
+    ```
 ### SM2非对称加密
 * 添加了sm2的非对称加密的算法，但速度一般，有待优化，不能保证兼容所有语言进行加解密，目前测试了js， python的相互加解密
 * sm2的加密解密算法在openssl 1.1.1的版本下自带的函数中暂无sm2的公钥私钥的加密函数，得自己实现，建议使用C，C++的算法，打包成PHP扩展的方式
