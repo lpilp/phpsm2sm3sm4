@@ -30,10 +30,10 @@ class RtEccFactory extends EccFactory{
     /**
      * Returns a factory to create NIST Recommended curves and generators.
      *
-     * @param  GmpMathInterface $adapter [optional] Defaults to the return value of EccFactory::getAdapter().
+     * @param  GmpMathInterface|null $adapter [optional] Defaults to the return value of EccFactory::getAdapter().
      * @return Sm2Curve
      */
-    public static function getSmCurves(GmpMathInterface $adapter = null): Sm2Curve
+    public static function getSmCurves(?GmpMathInterface $adapter = null): Sm2Curve
     {
         $adapter = $adapter ?: self::getAdapter();
         // var_dump($adapter);
