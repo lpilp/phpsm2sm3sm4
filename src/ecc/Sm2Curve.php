@@ -44,10 +44,10 @@ class Sm2Curve
     /**
      * Returns an sm2 generator.
      *
-     * @param  RandomNumberGeneratorInterface $randomGenerator
+     * @param  RandomNumberGeneratorInterface|null $randomGenerator
      * @return GeneratorPoint
      */
-    public function generatorSm2(RandomNumberGeneratorInterface $randomGenerator = null): GeneratorPoint
+    public function generatorSm2(?RandomNumberGeneratorInterface $randomGenerator = null): GeneratorPoint
     {
         $curve = $this->curveSm2();
         $order = gmp_init('0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123', 16);
